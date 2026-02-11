@@ -1,46 +1,69 @@
----
-name: main
+name: Build and Publish Docker Image
 
 on:
   push:
-  workflow_dispatch:
-    inputs:
-      debug_enabled:
-        description: 'Run the build with tmate debugging enabled'
-        required: false
-        default: false
-      acestream:
-        description: 'acestream update indicator'
-        required: false
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 env:
-  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-  DOCKER_REPO: acestream-engine
-  TAG: ${{ github.ref_name }}
-  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  ENDPOINT: ${{ secrets.DOCKER_USERNAME }}/acestream-service/actions/workflows/main.yml
-  TOKEN: ${{ secrets.ACESTREAM_SERVICE_TOKEN }}
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-      - uses: actions/checkout@v2
-      - name: setup
-        run: ./setup.sh
-      - name: test
-        run: ./test.sh
-      - name: Setup tmate session
-        if: ${{ github.event_name == 'workflow_dispatch' &&
-                github.event.inputs.debug_enabled ||
-                failure() }}
-        uses: mxschmitt/action-tmate@v3
-      - name: deploy
-        if: ${{ startswith(github.ref, 'refs/tags/') }} ||
-                github.event.inputs.acestream }}
-        env:
-          GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_USERNAME: ${{ github.actor }}
-          GITHUB_REGISTRY: ghcr.io
-          IMAGE_NAME: ${{ github.repository }}
-        run: ./deploy.sh
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract short SHA
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=${{ steps.vars.outputs.sha_short }}
+
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Generate build report
+        run: |
+          echo "### Docker Image Build Report 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "Successfully built and pushed the image to GHCR." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Tag |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- |" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' | while read tag; do
+            echo "| \`$tag\` |" >> $GITHUB_STEP_SUMMARY
+          done
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Digest:** \`${{ steps.push.outputs.digest }}\`" >> $GITHUB_STEP_SUMMARY

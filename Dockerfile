@@ -37,6 +37,17 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Expose the default Ace Stream port
 EXPOSE 6878
 
-# Ensure runtime directory exists and start the engine
-ENTRYPOINT ["/bin/bash", "-c", "mkdir -p /dev/shm/.ACEStream && ./start-engine \"$@\"", "--"]
-CMD ["--client-console", "--live-cache-type", "memory"]
+# Ensure dirs exist and start the engine
+ENTRYPOINT ["/bin/bash", "-c", "\
+  mkdir -p /dev/shm/.ACEStream /dev/shm/acecache && \
+  ./start-engine \"$@\" \
+", "--"]
+
+# NOTE: cache-limit/cache-max-bytes apply to console mode. :contentReference[oaicite:1]{index=1}
+CMD [
+  "--client-console",
+  "--cache-dir", "/dev/shm/acecache",
+  "--cache-max-bytes", "1610612736",
+  "--cache-auto", "false",
+  "--live-cache-type", "memory"
+]

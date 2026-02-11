@@ -18,7 +18,7 @@ You can run the Ace Stream engine as a standalone service using Docker:
 docker run --detach \
   --name acestream-engine \
   --publish 6878:6878 \
-  ghcr.io/kalpak44/acestream-engine:f804ddd
+  ghcr.io/kalpak44/acestream-engine:latest
 ```
 
 After starting the container, the Ace Stream engine will be accessible on its standard port `6878`.
@@ -28,7 +28,7 @@ After starting the container, the Ace Stream engine will be accessible on its st
 ```yaml
 services:
   acestream:
-    image: ghcr.io/kalpak44/acestream-engine:f804ddd
+    image: ghcr.io/kalpak44/acestream-engine:latest
     container_name: acestream-engine
     ports:
       - "6878:6878"

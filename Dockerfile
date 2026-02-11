@@ -23,7 +23,7 @@ WORKDIR /srv/ace
 # Download and install Ace Stream engine
 RUN curl --progress-bar "$BASE_URL/acestream_$ACE_VERSION.tar.gz" | tar xzf - \
     && cd lib \
-    && unzip \*.egg \
+    && unzip -o \*.egg \
     && rm *.egg \
     && cd .. \
     && ln -s /dev/shm/.ACEStream .ACEStream \

@@ -16,8 +16,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Create non-privileged user and set permissions
-RUN useradd --shell /bin/bash --home-dir /srv/ace --create-home ace
 WORKDIR /srv/ace
 
 # Download and install Ace Stream engine
@@ -29,16 +27,12 @@ RUN curl --progress-bar "$BASE_URL/acestream_$ACE_VERSION.tar.gz" | tar xzf - \
     && ln -s /dev/shm/.ACEStream .ACEStream \
     && ln -s /dev/shm/engine_runtime.json .
 
-# Copy configuration and set ownership
+# Copy configuration
 COPY setup.cfg .
-RUN chown -R ace:ace /srv/ace
-
-USER ace
-ENV PATH="/srv/ace/.local/bin:${PATH}"
 
 # Install python dependencies
-RUN pip install --no-cache-dir --user --upgrade pip \
-    && if [ -f requirements.txt ]; then pip install --no-cache-dir --user --requirement requirements.txt; fi
+RUN pip install --no-cache-dir --upgrade pip \
+    && if [ -f requirements.txt ]; then pip install --no-cache-dir --requirement requirements.txt; fi
 
 # Expose the default Ace Stream port
 EXPOSE 6878

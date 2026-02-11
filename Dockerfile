@@ -46,6 +46,3 @@ EXPOSE 6878
 # Ensure runtime directory exists and start the engine
 ENTRYPOINT ["/bin/bash", "-c", "mkdir -p /dev/shm/.ACEStream && ./start-engine \"$@\"", "--"]
 CMD ["--client-console", "--live-cache-type", "memory"]
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:6878 || exit 1

@@ -39,6 +39,4 @@ EXPOSE 6878
 
 ENTRYPOINT ["/bin/bash", "-c", "mkdir -p /dev/shm/.ACEStream /dev/shm/acecache && exec ./start-engine \"$@\"", "--"]
 
-CMD ["--client-console",
-     "--cache-dir","/dev/shm/acecache",
-     "--cache-limit","1"]
+CMD ["--client-console","--cache-dir","/dev/shm/acecache","--cache-max-bytes","1610612736","--cache-auto","0","--live-cache-type","memory"]

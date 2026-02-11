@@ -1,4 +1,4 @@
-name: Build and Publish Docker Image
+name: Build and Publish Docker Image (Multi-Platform)
 
 on:
   push:
@@ -23,6 +23,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Needed for multi-arch builds on x86 runners
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -43,22 +47,25 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
             type=raw,value=${{ steps.vars.outputs.sha_short }}
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image (multi-platform)
         id: push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate build report
         run: |
           echo "### Docker Image Build Report 🚀" >> $GITHUB_STEP_SUMMARY
-          echo "Successfully built and pushed the image to GHCR." >> $GITHUB_STEP_SUMMARY
+          echo "Successfully built and pushed a multi-platform image to GHCR." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Platforms:** \`linux/amd64\`, \`linux/arm64\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Tag |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- |" >> $GITHUB_STEP_SUMMARY

@@ -23,8 +23,10 @@ RUN mkdir -p /app /.cache && \
     curl -fsSL "https://download.acestream.media/linux/acestream_${VERSION}.tar.gz" \
         | tar xzf - -C /app
 
+COPY . /
+
 RUN pip install uv && \
-    uv pip install --requirement /app/requirements.txt && \
+    uv pip install --system --requirement /app/requirements.txt && \
     pip uninstall --yes uv
 
 RUN chmod -R 755 /app && \
@@ -32,8 +34,6 @@ RUN chmod -R 755 /app && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/
-
-COPY . /
 
 ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]
 

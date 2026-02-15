@@ -29,7 +29,6 @@ RUN \
         ca-certificates \
         catatonit \
         curl \
-        nano \
         libgirepository1.0-dev \
     && mkdir -p /app \
     && mkdir -p /.cache \

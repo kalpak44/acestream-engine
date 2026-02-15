@@ -25,5 +25,5 @@ RUN chmod 755 /entrypoint.sh
 ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]
 EXPOSE 6878/tcp
 
-# max 2 GiB --live-cache-type","memory",
+# max 512 MB --live-cache-type","memory",
 CMD ["--cache-max-bytes","536870912"]

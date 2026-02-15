@@ -21,29 +21,30 @@ ENV VERSION="3.2.11_ubuntu_22.04_x86_64_py3.8"
 
 WORKDIR /app
 
-RUN set -eux; \
-    apt-get update; \
+RUN \
+    apt-get update \
+    && \
     apt-get install --no-install-recommends --no-install-suggests -y \
         bash \
         ca-certificates \
         catatonit \
         curl \
-    ; \
-    mkdir -p /.cache; \
-    curl -fsSL "https://download.acestream.media/linux/acestream_${VERSION}.tar.gz" \
-        | tar xzf - -C /app; \
-    \
-    # Install python deps from the AceStream bundle \
-    pip install --no-cache-dir -r /app/requirements.txt; \
-    \
-    # cleanup \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-        curl \
-        ca-certificates \
-    ; \
-    apt-get autoremove -y; \
-    apt-get clean; \
-    rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/
+        nano \
+        libgirepository1.0-dev \
+    && groupadd --gid 1000 appuser \
+    && useradd --uid 1000 --gid 1000 -m appuser \
+    && mkdir -p /app \
+    && mkdir -p /.cache \
+    && curl -fsSL "https://download.acestream.media/linux/acestream_${VERSION}.tar.gz" \
+        | tar xzf - -C /app \
+    && pip install uv \
+    && uv pip install --requirement /app/requirements.txt \
+    && chown -R appuser:appuser /.cache /app && chmod -R 755 /app \
+    && pip uninstall --yes uv \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/
 
 COPY . /
 

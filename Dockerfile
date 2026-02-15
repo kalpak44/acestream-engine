@@ -1,4 +1,4 @@
-FROM python:3.8-slim-bullseye@sha256:6c1dfe2a06a2c3a7d2b1c73d6f1d9a13dfd7af8d0c4e7b7e2b3d06d4b6e0a2a1
+FROM python:3.8-slim-bullseye
 
 LABEL \
     maintainer="Pavel Usanli <pavel.usanli@gmail.com>" \

@@ -16,7 +16,7 @@ ENV DEBIAN_FRONTEND="noninteractive" \
     PYTHONUNBUFFERED=1 \
     PYTHON_EGG_CACHE=/.cache
 
-# IMPORTANT: use the py3.8 build (this is the key change)
+# IMPORTANT: use the py3.8 build
 ENV VERSION="3.2.11_ubuntu_22.04_x86_64_py3.8"
 
 WORKDIR /app

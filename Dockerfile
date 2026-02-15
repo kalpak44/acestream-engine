@@ -26,4 +26,4 @@ ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]
 EXPOSE 6878/tcp
 
 # memory-only cache, max 2 GiB
-CMD ["--live-cache-type","memory","--cache-max-bytes","2147483648","--cache-auto","0"]
+#CMD ["--live-cache-type","memory","--cache-max-bytes","2147483648","--cache-auto","0"]

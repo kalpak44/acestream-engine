@@ -17,6 +17,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 RUN mkdir -p /app /.cache \
   && curl -fsSL "https://download.acestream.media/linux/acestream_${VERSION}.tar.gz" | tar xzf - -C /app
 
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
 

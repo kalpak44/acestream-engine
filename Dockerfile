@@ -1,4 +1,4 @@
-FROM python:3.10.11-slim
+FROM python:3.10-slim-bookworm@sha256:034724ef64585eeb0e82385e9aabcbeabfe5f7cae2c2dcedb1da95114372b6d7
 
 LABEL \
     maintainer="Pavel Usanli <pavel.usanli@gmail.com>" \

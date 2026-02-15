@@ -1,4 +1,4 @@
-FROM python:3.8-slim-bullseye
+FROM python:3.10-slim-bookworm
 
 LABEL \
     maintainer="Pavel Usanli <pavel.usanli@gmail.com>" \

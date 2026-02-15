@@ -7,7 +7,6 @@ LABEL \
     org.opencontainers.image.url="https://github.com/kalpak44/acestream-engine" \
     org.opencontainers.image.vendor="https://pavel-usanli.online/"
 
-# IMPORTANT: use the py3.8 build
 ENV VERSION="3.2.11_ubuntu_22.04_x86_64_py3.10"
 
 WORKDIR /app

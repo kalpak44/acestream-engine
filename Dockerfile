@@ -1,4 +1,4 @@
-FROM python:3.10-slim-bookworm@sha256:034724ef64585eeb0e82385e9aabcbeabfe5f7cae2c2dcedb1da95114372b6d7
+FROM python:3.8-slim-bullseye@sha256:6c1dfe2a06a2c3a7d2b1c73d6f1d9a13dfd7af8d0c4e7b7e2b3d06d4b6e0a2a1
 
 LABEL \
     maintainer="Pavel Usanli <pavel.usanli@gmail.com>" \
@@ -9,41 +9,41 @@ LABEL \
 
 ENV DEBIAN_FRONTEND="noninteractive" \
     CRYPTOGRAPHY_DONT_BUILD_RUST=1 \
-    PIP_BREAK_SYSTEM_PACKAGES=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_ROOT_USER_ACTION=ignore \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    UV_NO_CACHE=true \
-    UV_SYSTEM_PYTHON=true \
     PYTHON_EGG_CACHE=/.cache
 
-ENV VERSION="3.2.11_ubuntu_22.04_x86_64_py3.10"
+# IMPORTANT: use the py3.8 build (this is the key change)
+ENV VERSION="3.2.11_ubuntu_22.04_x86_64_py3.8"
 
 WORKDIR /app
 
-# hadolint ignore=DL4006,DL3008,DL3013
-RUN \
-    apt-get update \
-    && \
+RUN set -eux; \
+    apt-get update; \
     apt-get install --no-install-recommends --no-install-suggests -y \
         bash \
         ca-certificates \
         catatonit \
         curl \
-    && mkdir -p /.cache \
-    && curl -fsSL "https://download.acestream.media/linux/acestream_${VERSION}.tar.gz" \
-        | tar xzf - -C /app \
-    && pip install uv \
-    && uv pip install --requirement /app/requirements.txt \
-    && pip uninstall --yes uv \
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    ; \
+    mkdir -p /.cache; \
+    curl -fsSL "https://download.acestream.media/linux/acestream_${VERSION}.tar.gz" \
+        | tar xzf - -C /app; \
+    \
+    # Install python deps from the AceStream bundle \
+    pip install --no-cache-dir -r /app/requirements.txt; \
+    \
+    # cleanup \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
         curl \
         ca-certificates \
-    && apt-get autoremove -y \
-    && apt-get clean \
-    && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/
+    ; \
+    apt-get autoremove -y; \
+    apt-get clean; \
+    rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/
 
 COPY . /
 

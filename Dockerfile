@@ -36,7 +36,7 @@ RUN \
         | tar xzf - -C /app \
     && pip install uv \
     && uv pip install --requirement /app/requirements.txt \
-    && chown -R appuser:appuser /.cache /app && chmod -R 755 /app \
+    && chmod -R 755 /app \
     && pip uninstall --yes uv \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && apt-get autoremove -y \

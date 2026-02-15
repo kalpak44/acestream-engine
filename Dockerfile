@@ -11,27 +11,27 @@ ENV VERSION="3.2.11_ubuntu_22.04_x86_64_py3.10"
 
 WORKDIR /app
 
-RUN \
-    apt-get update \
-    && \
+RUN apt-get update && \
     apt-get install --no-install-recommends --no-install-suggests -y \
         bash \
         ca-certificates \
         catatonit \
         curl \
-        libgirepository1.0-dev \
-    && mkdir -p /app \
-    && mkdir -p /.cache \
-    && curl -fsSL "https://download.acestream.media/linux/acestream_${VERSION}.tar.gz" \
-        | tar xzf - -C /app \
-    && pip install uv \
-    && uv pip install --requirement /app/requirements.txt \
-    && chmod -R 755 /app \
-    && pip uninstall --yes uv \
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-    && apt-get autoremove -y \
-    && apt-get clean \
-    && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/
+        libgirepository1.0-dev
+
+RUN mkdir -p /app /.cache && \
+    curl -fsSL "https://download.acestream.media/linux/acestream_${VERSION}.tar.gz" \
+        | tar xzf - -C /app
+
+RUN pip install uv && \
+    uv pip install --requirement /app/requirements.txt && \
+    pip uninstall --yes uv
+
+RUN chmod -R 755 /app && \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/
 
 COPY . /
 

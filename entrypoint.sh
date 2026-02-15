@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-# Create required cache directories in /dev/shm
-mkdir -p /dev/shm/.ACEStream /dev/shm/acecache
+mkdir -p /dev/shm/.ACEStream
 
-exec \
-	/app/start-engine \
-	--client-console \
-	"$@"
+exec /app/start-engine --client-console "$@"

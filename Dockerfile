@@ -1,6 +1,4 @@
-# syntax=docker/dockerfile:1
-
-FROM python:3.10-slim
+FROM python:3.10.11-slim
 
 LABEL \
     maintainer="Pavel Usanli <pavel.usanli@gmail.com>" \
